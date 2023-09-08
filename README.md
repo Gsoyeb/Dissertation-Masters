@@ -21,11 +21,11 @@ Requirements:
 <br>
 
 To install the dependancies run:
-pip install numpy
-pip install chess
-pip install tensorflow
-pip install keras
-pip install -U scikit-learn
+1. pip install numpy
+2. pip install chess
+3. pip install tensorflow
+4. pip install keras
+5. pip install -U scikit-learn
 
 
 ======================= USAGE ==================================
