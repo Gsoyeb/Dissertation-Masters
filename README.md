@@ -5,15 +5,18 @@ University final year dissertation
 Deep Learning Approaches to Breast Histopathology Image Classification: A Focus on Dataset Optimisation
 -------------------
 Author: Soyeb Golam
+\n
 E-Mail: psxsg13@nottingham.ac.uk
 -------------------
 
 Requirements:
-    * Python 3+
-    * Tenserflow
-    * PIL
-    * Keras
-    * python-chess
+    + Python 3+
+    + Tenserflow
+    + PIL
+    + Keras
+    + python-chess
+
+\n
 
 To install the dependancies run:
 pip install numpy
