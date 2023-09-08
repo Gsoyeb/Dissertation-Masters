@@ -12,11 +12,11 @@ E-Mail: psxsg13@nottingham.ac.uk
 -------------------
 
 Requirements:
-    + Python 3+
-    + Tenserflow
-    + PIL
-    + Keras
-    + python-chess
++ Python 3+
++ Tenserflow
++ PIL
++ Keras
++ python-chess
 
 <br>
 
