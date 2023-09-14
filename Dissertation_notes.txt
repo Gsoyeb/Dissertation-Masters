@@ -1,0 +1,157 @@
+Project Overview
+	In 2020, nearly 700000 women died of breast cancer. Of these the most common types are the Invasive Ductal Carcinoma (IDC). 
+	Originates from abnormal cell behaviour in mammary glands (a lot of time due to genetic disruptions). 
+	Benign tumours: Minimal harm.
+	Malignant tumours: Aggressive, spread to surrounding tissues.
+
+	Now the best way to cure this deasese is to identify them as soon as possible.
+
+	AI in this
+		Over the past decade in medical imaging deep learning methods, such as VGG16 have shown exceptional proficiency in identifying and categorizing in images, often matching or surpassing human experts.
+
+	This project will compare pre-trained models, like VGG16 with hybrid models CNN-SVM and CNN-RF,  with IDC images collected from Kaggle and test their efficiency.
+
+	VGG16
+
+
+Research problem
+	Lack of data:
+		Medical imaging, especially in breast histopathology, faces constraints due to data scarcity.
+		So, despite the potential of deep learning techniques, there's a significant gap in optimising models for smaller datasets. 
+
+		Another issue is the time that high complex models take to execute. For example, during model fitting of VGG16, it took me 50 minutes to complete the process.  
+		As a result, the primary focus of this research is to achieve high level models with limited dataset in the shortest possible time.
+
+
+Methodology
+	We had roughly 300000 data at the beginning. However, there was a significant data imbalance in favour of non-cancerous, which can lead to biases. -> SO first Undersampling was employed to create two balanced datasets with 9000 and 18000 images each.
+	Next was trying to understand cancerous vs non with RGB Channel analysis showed that non-cancerous samples consistently had higher average channel values than cancerous ones, which is a helpful guidance for feature extraction set up.
+	We needed to decide during image pre-processing (before modelling) what height*width to use for pixel frame. So in the EDA, we found that most images lie in the 50by50.
+
+	VGG16 pre-processing
+		Data Split: Divided into training, validation, and test sets for model training, fine-tuning, and evaluation.
+		Preprocessing: Images resized to match VGG16 model's input dimensions, pixel values normalized to [0, 1].
+		Data Augmentation: Implemented techniques for the training set:
+			Rotation: Randomly rotated images for variability.
+			Shifts: Applied random width and height shifts.
+			Shear: Used a random shearing angle to distort images.
+			Zoom: Applied random zooming to simulate different subject distances.
+			Flip: Random horizontal flipping to mimic various orientations.
+		Purpose: Augmentation increased training dataset size and introduced variability, enhancing model robustness and generalization.
+
+	Hybrid
+		Resizing: Images resized to 50x50 pixels for consistent input size.
+		Pixel Scaling: Pixel values rescaled to the range of 0 to 1 for faster training convergence.
+		Data Enhancement: Employed techniques like rotations, width/height adjustments, shearing, zooming, and horizontal flips to augment the training dataset, enhancing model diversity and reducing overfitting risk.
+		Dataset Division: Data split into training, validation, and testing subsets for unbiased model evaluation against unseen data.
+
+	VGG16 Model Development without Fine-tuning:
+
+		Used pre-trained VGG16 model without its top layers for binary classification (IDC-positive vs. IDC-negative).
+		Added custom layers: global average pooling and dense layers for binary classification.
+		Adam optimizer with a learning rate of 0.001.
+		Binary cross-entropy loss function.
+		Applied basic data augmentation techniques like random rotations and flips.
+	VGG16 Model Development with Fine-tuning:
+		Fine-tuned blocks 4 and 5 of the VGG16 model for task-specific adaptation.
+		Similar architecture to non-fine-tuned version.
+		Lower learning rate of 0.0001 for subtle fine-tuning.
+		Employed aggressive data augmentation: rotations, shifts, shears, zooms, flips to enhance model robustness and reduce overfitting.
+
+	CNN-SVM Model Development:
+
+		Designed as a feature extractor with three convolutional layers (3x3 kernels).
+		Applied max-pooling (2x2 window) after each convolutional layer to reduce spatial dimensions.
+		Flattened feature maps into one-dimensional arrays.
+		Utilized a Support Vector Machine (SVM) with a linear kernel to classify images into IDC-positive or IDC-negative.
+		Evaluated SVM's performance on the validation set using accuracy, confusion matrix, and ROC curve.
+
+			Key metrics, including accuracy, were calculated to assess model performance.
+			Confusion matrices and classification reports were generated for a comprehensive view of model capabilities in distinguishing IDC-positive and IDC-negative images.
+			Visualizations, including accuracy and loss plots over epochs, provided insights into training dynamics, highlighting areas for improvement and confirming fine-tuning efficacy.
+	
+	CNN-RF Model Development:
+
+		Shared the same CNN architecture for feature extraction as the CNN-SVM model.
+		Employed a Random Forest (RF) classifier with 100 decision trees after feature extraction.
+		RF aggregated tree predictions to reduce overfitting and enhance generalization.
+		Evaluation metrics for the CNN-RF model matched those of the CNN-SVM model, facilitating direct comparison on the validation set.
+
+			All models underwent comprehensive evaluation.
+			Key metrics, including accuracy, were calculated for each model to assess their predictive performance.
+			Confusion matrices were generated to show true positives, true negatives, false positives, and false negatives.
+			ROC curves were plotted for all novel models to illustrate the trade-off between sensitivity and specificity.
+
+	Ensemble learning
+		Ensemble model designed to combine SVM and RF classifiers.
+		Utilized a soft voting mechanism where classifiers predicted class probabilities.
+		Ensemble model computed weighted average of probabilities to determine the final class label.
+		Trained on feature vectors from the training set.
+		Performance benchmarked against individual CNN-SVM and CNN-RF models on the validation set.
+		Provided insights by comparing accuracy and other metrics between ensemble and constituent models.
+
+Data and results
+
+	VGG16 Normal vs. Fine-Tuning:
+
+		Fine-tuning significantly improved model performance.
+		Fine-tuned VGG16 models outperformed their non-fine-tuned counterparts.
+		Demonstrated the power of transferring learned features from pre-trained models, even with limited data.
+	
+	Efficiency of Hybrid Models Speed-Wise:
+
+		CNN-SVM and CNN-RF models were not only accurate but also computationally efficient.
+		Completed tasks much faster compared to VGG16 models, with a 10x reduction in training and prediction time.
+		Reduced computational resource requirements, making them practical for real-world applications.
+		Robustness of CNNs with Limited Datasets:
+
+		CNN-SVM and CNN-RF models maintained competitive performance with halved dataset sizes (9k vs. 18k).
+		Demonstrated the efficiency and robustness of these models in capturing data patterns and features effectively, even with limited data.
+	
+	Ensemble Learning Did Not Yield Significant Advantages:
+
+		Ensemble models didn't show a significant improvement in accuracy over individual models.
+		Suggested that individual CNN-SVM and CNN-RF models were already optimized to a level where ensemble methods offered minimal benefit.
+		Importance of Model Selection and Optimization:
+
+		Emphasized the significance of choosing the right model and optimization techniques, particularly when data is limited.
+		Highlighted the potential of specialized models like CNN-SVM and CNN-RF in achieving high performance with constrained datasets.
+
+
+	if he asks why it did not improve CNN ensemble:
+
+		Consider increasing the depth of the convolutional layers or adding more convolutional layers to capture more intricate features in IDC breast cancer histopathological images.
+		Experiment with different activation functions to see if they improve model performance.
+		Implement dropout layers to prevent overfitting and enhance model generalization.
+		Adjust the size of the convolutional kernels and max-pooling windows to optimize feature extraction.
+		Explore batch normalization to improve training stability and convergence.
+		Increase the complexity of the model gradually and monitor performance using validation data to find the right balance between model complexity and generalization.
+		Fine-tune hyperparameters like learning rate, batch size, and number of epochs to optimize training.
+		Incorporate data augmentation techniques during training to introduce more variability and enhance model robustness.
+		Evaluate the model's performance using appropriate evaluation metrics, such as accuracy, precision, recall, and F1-score, on a validation dataset to fine-tune the architecture and hyperparameters.
+
+
+
+
+
+
+Conclusions
+	The research stands as a testament to the potential of AI in revolutionising the field of breast histopathology image classification.
+
+	While significant achievements were made, the research also identifies areas for improvement, ensuring that subsequent studies have a clear direction:
+		
+		Addressing Dataset Limitations:
+
+		Diversify data sources for broader representation.
+		Collaborative training with multiple institutions or hospitals.
+		Utilize advanced techniques like GANs for synthetic data augmentation.
+		Image Segmentation for Anomaly Detection:
+
+		Incorporate established segmentation algorithms (e.g., U-Net) for detailed region identification.
+		Implement attention mechanisms to highlight significant areas within images.
+		Establish a feedback loop with medical professionals for validation and refinement of segmented regions.
+		Enhance model transparency and diagnostic capabilities in breast histopathology image classification.
+
+
+
+
